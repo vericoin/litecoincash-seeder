@@ -1,10 +1,12 @@
-bitcoin-seeder
-==============
+Litecoin Cash Seeder
+====================
 
-Bitcoin-seeder is a crawler for the Bitcoin network, which exposes a list
-of reliable nodes via a built-in DNS server.
+litecoincash-seeder is a crawler for the Litecoin Cash network, which 
+exposes a list of reliable nodes via a built-in DNS server, or instead
+just generates that list to push to a remote CloudFlare server.
 
 Features:
+* CloudFlare DNS integration
 * regularly revisits known nodes to check their availability
 * bans nodes after enough failures, or bad behaviour
 * accepts nodes down to v0.3.19 to request new IP addresses from,
@@ -14,13 +16,15 @@ Features:
 * very low memory (a few tens of megabytes) and cpu requirements.
 * crawlers run in parallel (by default 24 threads simultaneously).
 
+
 REQUIREMENTS
 ------------
 
 $ sudo apt-get install build-essential libboost-all-dev libssl-dev
 
-USAGE
------
+
+USAGE: LOCAL DNS SERVER MODE
+----------------------------
 
 Assuming you want to run a dns seed on dnsseed.example.com, you will
 need an authorative NS record in example.com's domain record, pointing
@@ -37,6 +41,16 @@ On the system vps.example.com, you can now run dnsseed:
 
 If you want the DNS server to report SOA records, please provide an
 e-mail address (with the @ part replaced by .) using -m.
+
+
+USAGE: CLOUDFLARE API MODE
+--------------------------
+
+Have the seeder above running all the time, but with no NS record.
+
+Fill in CloudFlare API config and have the CloudFlare upload run on a
+cron job.
+
 
 COMPILING
 ---------
