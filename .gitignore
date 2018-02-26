@@ -1,3 +1,5 @@
 *.o
+*.pyc
+seeder.conf
 dnsseed*
 dnsstats.log

@@ -1,0 +1,7 @@
+[general]
+domain=litecoinca.sh
+name=autoseeds
+user=your@email.com
+key=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+seed_dump=/path/to/dnsseed.dump
+hard_seeds=/path/to/hardseeds.txt

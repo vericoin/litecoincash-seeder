@@ -1,0 +1,7 @@
+Put seeder.conf in either /etc/seeder.conf or ~/.seeder/seeder.conf
+
+Configure with your params
+
+Run python seeder.py
+
+Call me with any problems (there will be some as its totally untested!)
