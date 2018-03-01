@@ -20,7 +20,12 @@ def read_hard_seeds(hard_seeds_file):
         for line in seed_lines:
             stripped_line = line.strip()
             if stripped_line:
-                hard_seeds.append(stripped_line)
+                if ':' in stripped_line:
+                    hard_seed = stripped_line.split(':')[0]
+                else:
+                    hard_seed = stripped_line
+
+                hard_seeds.append(hard_seed)
 
     logger.info("Found {} hard seeds.".format(len(hard_seeds)))
 
@@ -40,11 +45,15 @@ def read_seed_dump(seeds_file, valid_port="62458"):
     with open(seeds_file) as seeds:
 
         for line in seeds:
-            components = line.split(":")
-            ip_addr = components[0]
+            if line.startswith('#'):
+                continue
 
-            if valid_port in components[1]:
-                is_good = components.replace(valid_port, "").strip()[0] == "1"
+            components = line.split()
+            ip_addr, port = components[0].split(':')
+            logger.debug("Read a seed from a file: IP {} PORT {}".format(ip_addr, port))
+
+            if valid_port in port:
+                is_good = components[1] == "1"
                 if is_good:
                     addresses.append(ip_addr)
 
@@ -62,6 +71,8 @@ def main():
 
     configuration = config.read_local_config()
 
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
     try:
         seed_candidates = read_seed_dump(configuration['seed_dump'])
         hard_seeds = read_hard_seeds(configuration['hard_seeds'])
@@ -73,7 +84,9 @@ def main():
     current_seeds = cloudflare.get_seeds()
 
     stale_current_seeds = [seed for seed in current_seeds if seed not in seed_candidates and seed not in hard_seeds]
-    cloudflare.delete_seeds(stale_current_seeds)
+
+    if stale_current_seeds:
+        cloudflare.delete_seeds(stale_current_seeds)
 
     new_seeds = [seed for seed in seed_candidates+hard_seeds if seed not in current_seeds]
     cloudflare.set_seeds(new_seeds)

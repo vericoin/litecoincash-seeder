@@ -84,6 +84,7 @@ class CloudflareSeeder(object):
         if ttl is not None:
             new_record['ttl'] = ttl
 
+        logger.debug("Posting record {}".format(new_record))
         self.cf.zones.dns_records.post(self.zone_id, data=new_record)
 
     def delete_seeds(self, seeds):
@@ -100,4 +101,5 @@ class CloudflareSeeder(object):
 
         """ Set a list of seeds as DNS entries in cloudflare. """
 
-        map(self.set_seed, seeds, ttl)
+        for seed in seeds:
+            self.set_seed(seed, ttl)
