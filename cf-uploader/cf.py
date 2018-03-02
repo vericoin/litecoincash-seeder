@@ -65,7 +65,7 @@ class CloudflareSeeder(object):
         """ Get the seed dns records, i.e., those which are type A and match the name. """
 
         record_name = '.'.join([self.name, self.domain])
-        return self.cf.zones.dns_records.get(self.zone_id, params={'name': record_name, 'type': 'A'})
+        return self.cf.zones.dns_records.get(self.zone_id, params={'name': record_name, 'type': 'A', 'per_page': 1000})
 
     def get_seeds(self):
 
@@ -85,7 +85,10 @@ class CloudflareSeeder(object):
             new_record['ttl'] = ttl
 
         logger.debug("Posting record {}".format(new_record))
-        self.cf.zones.dns_records.post(self.zone_id, data=new_record)
+        try:
+            self.cf.zones.dns_records.post(self.zone_id, data=new_record)
+        except CloudFlare.exceptions.CloudFlareAPIError as e:
+            logger.error("Error setting seed through the cloudflare API: %d %s"%(e, e))
 
     def delete_seeds(self, seeds):
 
