@@ -64,8 +64,28 @@ class CloudflareSeeder(object):
 
         """ Get the seed dns records, i.e., those which are type A and match the name. """
 
-        record_name = '.'.join([self.name, self.domain])
-        return self.cf.zones.dns_records.get(self.zone_id, params={'name': record_name, 'type': 'A', 'per_page': 1000})
+        page = 0
+        records = []
+        zone_id = self.zone_id
+        default_params = {'name': '.'.join([self.name, self.domain]), 'type': 'A', 'per_page': 10}
+
+        self.cf._base.raw = True
+        while True:
+            page += 1
+            default_params['page'] = page
+
+            logger.info("Getting page {} of DNS entries".format(page))
+
+            raw_results = self.cf.zones.dns_records.get(zone_id, params=default_params)
+            records.extend(raw_results['result'])
+
+            if page == raw_results['result_info']['total_pages']:
+                logger.debug("Fetched all pages of DNS seeds in cloudflare.")
+                break
+
+        self.cf._base.raw = False
+
+        return records
 
     def get_seeds(self):
 
