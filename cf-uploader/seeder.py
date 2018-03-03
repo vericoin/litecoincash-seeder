@@ -83,12 +83,14 @@ def main():
     cloudflare = cf.CloudflareSeeder.from_configuration(configuration)
     current_seeds = cloudflare.get_seeds()
 
+    logger.debug("Detected current seeds in cloudflare: {}".format(current_seeds))
+
     stale_current_seeds = [seed for seed in current_seeds if seed not in seed_candidates and seed not in hard_seeds]
 
     if stale_current_seeds:
         cloudflare.delete_seeds(stale_current_seeds)
 
-    new_seeds = [seed for seed in seed_candidates+hard_seeds if seed not in current_seeds]
+    new_seeds = [seed for seed in set(seed_candidates+hard_seeds) if seed not in current_seeds]
     cloudflare.set_seeds(new_seeds)
 
 
