@@ -35,7 +35,7 @@ public:
   CDnsSeedOpts() : nThreads(96), nDnsThreads(4), nPort(53), mbox(NULL), ns(NULL), host(NULL), tor(NULL), fUseTestNet(false), fWipeBan(false), fWipeIgnore(false), ipv4_proxy(NULL), ipv6_proxy(NULL) {}
 
   void ParseCommandLine(int argc, char **argv) {
-    static const char *help = "litecoincash-seeder\n"
+    static const char *help = "vericoin-seeder\n"
                               "Usage: %s -h <host> -n <ns> [-m <mbox>] [-t <threads>] [-p <port>]\n"
                               "\n"
                               "Options:\n"
@@ -253,8 +253,8 @@ public:
     dns_opt.host = opts->host;
     dns_opt.ns = opts->ns;
     dns_opt.mbox = opts->mbox;
-    dns_opt.datattl = 3600;
-    dns_opt.nsttl = 40000;
+    dns_opt.datattl = 86400*7;
+    dns_opt.nsttl = 86400;
     dns_opt.cb = GetIPList;
     dns_opt.port = opts->nPort;
     dns_opt.nRequests = 0;
@@ -397,13 +397,15 @@ extern "C" void* ThreadStats(void*) {
   return nullptr;
 }
 
-static const string mainnet_seeds[] = {"seeds.litecoinca.sh", ""};
-static const string testnet_seeds[] = {"127.0.0.1", ""};
+static const string mainnet_seeds[] = {"emea.vrc.vericonomy.com", "amer.vrc.vericonomy.com", "apac.vrc.vericonomy.com", ""};
+static const string testnet_seeds[] = {"", ""};
 static const string *seeds = mainnet_seeds;
 
 extern "C" void* ThreadSeeder(void*) {
   if (!fTestNet){
-    db.Add(CService("kjy2eqzk4zwi5zd3.onion", 8333), true);
+    db.Add(CService("206.189.59.89", 58684), true);
+    db.Add(CService("206.189.209.81", 58684), true);
+    db.Add(CService("206.189.145.110", 58684), true);
   }
   do {
     for (int i=0; seeds[i] != ""; i++) {

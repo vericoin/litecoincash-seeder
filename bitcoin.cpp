@@ -52,7 +52,7 @@ class CNode {
     if (nHeaderStart == -1) return;
     unsigned int nSize = vSend.size() - nMessageStart;
     memcpy((char*)&vSend[nHeaderStart] + offsetof(CMessageHeader, nMessageSize), &nSize, sizeof(nSize));
-    if (vSend.GetVersion() >= 209) {
+    if (vSend.GetVersion() >= PROTOCOL_VERSION) {
       uint256 hash = Hash(vSend.begin() + nMessageStart, vSend.end());
       unsigned int nChecksum = 0;
       memcpy(&nChecksum, &hash, sizeof(nChecksum));
@@ -82,7 +82,7 @@ class CNode {
     CAddress me(CService("0.0.0.0"));
     BeginMessage("version");
     int nBestHeight = GetRequireHeight();
-    string ver = "/bitcoin-seeder:0.01/";
+    string ver = "/vericoin-seeder:1.10/";
     vSend << PROTOCOL_VERSION << nLocalServices << nTime << you << me << nLocalNonce << ver << nBestHeight;
     EndMessage();
   }
@@ -105,21 +105,13 @@ class CNode {
       CAddress addrMe;
       CAddress addrFrom;
       uint64 nNonce = 1;
-      vRecv >> nVersion >> you.nServices >> nTime >> addrMe;
-      if (nVersion == 10300) nVersion = 300;
-      if (nVersion >= 106 && !vRecv.empty())
-        vRecv >> addrFrom >> nNonce;
-      if (nVersion >= 106 && !vRecv.empty())
-        vRecv >> strSubVer;
-      if (nVersion >= 209 && !vRecv.empty())
-        vRecv >> nStartingHeight;
-      
-      if (nVersion >= 209) {
+	  vRecv >> nVersion >> you.nServices >> nTime >> addrMe >> addrFrom >> nNonce >> strSubVer >>nStartingHeight;
+	  if (nVersion >= PROTOCOL_VERSION) {
         BeginMessage("verack");
         EndMessage();
       }
       vSend.SetVersion(min(nVersion, PROTOCOL_VERSION));
-      if (nVersion < 209) {
+      if (nVersion < PROTOCOL_VERSION) {
         this->vRecv.SetVersion(min(nVersion, PROTOCOL_VERSION));
         GotVersion();
       }
@@ -188,7 +180,7 @@ class CNode {
         vRecv.insert(vRecv.begin(), vHeaderSave.begin(), vHeaderSave.end());
         break;
       }
-      if (vRecv.GetVersion() >= 209) {
+      if (vRecv.GetVersion() >= PROTOCOL_VERSION) {
         uint256 hash = Hash(vRecv.begin(), vRecv.begin() + nMessageSize);
         unsigned int nChecksum = 0;
         memcpy(&nChecksum, &hash, sizeof(nChecksum));
@@ -210,8 +202,8 @@ public:
     vRecv.SetType(SER_NETWORK);
     vRecv.SetVersion(0);
     if (time(NULL) > 1329696000) {
-      vSend.SetVersion(209);
-      vRecv.SetVersion(209);
+      vSend.SetVersion(PROTOCOL_VERSION);
+      vRecv.SetVersion(PROTOCOL_VERSION);
     }
   }
   bool Run() {

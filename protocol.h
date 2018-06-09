@@ -18,7 +18,7 @@
 extern bool fTestNet;
 static inline unsigned short GetDefaultPort(const bool testnet = fTestNet)
 {
-    return testnet ? 62456 : 62458;
+    return testnet ? 48684 : 58684;
 }
 
 //
@@ -44,7 +44,7 @@ class CMessageHeader
              READWRITE(FLATDATA(pchMessageStart));
              READWRITE(FLATDATA(pchCommand));
              READWRITE(nMessageSize);
-             if (nVersion >= 209)
+             if (nVersion >= PROTOCOL_VERSION)
              READWRITE(nChecksum);
             )
 

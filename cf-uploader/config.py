@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 CONF_FILE_LOCATIONS = [
     '/etc/seeder.conf',
-    os.path.expanduser('~/.seeder/seeder.conf'),
+    os.path.expanduser('~/.vrcseeder/seeder.conf'),
 ]
 
 
